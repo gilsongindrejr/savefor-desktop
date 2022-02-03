@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>UI_Login</class>
- <widget class="QWidget" name="UI_Login">
+ <class>Login</class>
+ <widget class="QWidget" name="Login">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -20,7 +20,7 @@
    <item>
     <widget class="QFrame" name="top_frame">
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
@@ -30,7 +30,7 @@
    <item>
     <widget class="QFrame" name="mid_frame">
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
@@ -39,7 +39,7 @@
       <item>
        <widget class="QFrame" name="mid_left_frame">
         <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
+         <enum>QFrame::NoFrame</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
@@ -66,7 +66,7 @@
 }</string>
         </property>
         <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
+         <enum>QFrame::NoFrame</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
@@ -75,12 +75,15 @@
          <item>
           <widget class="QFrame" name="form_frame">
            <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
+            <enum>QFrame::NoFrame</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Raised</enum>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QLabel" name="username_label">
               <property name="text">
@@ -109,14 +112,51 @@
           </widget>
          </item>
          <item>
+          <widget class="QFrame" name="info_frame">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>10</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="info_label">
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
           <widget class="QFrame" name="button_frame">
            <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
+            <enum>QFrame::NoFrame</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Raised</enum>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <property name="topMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QPushButton" name="login_button">
               <property name="maximumSize">
@@ -139,10 +179,13 @@
       <item>
        <widget class="QFrame" name="mid_right_frame">
         <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
+         <enum>QFrame::NoFrame</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
+        </property>
+        <property name="lineWidth">
+         <number>0</number>
         </property>
        </widget>
       </item>
@@ -152,10 +195,13 @@
    <item>
     <widget class="QFrame" name="bot_frame">
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
+     </property>
+     <property name="lineWidth">
+      <number>0</number>
      </property>
     </widget>
    </item>
