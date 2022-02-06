@@ -13,24 +13,6 @@ from views.upload import Ui_Upload
 from worker import Worker
 
 
-def is_windows():
-    """ Adds app to system tray """
-    if os.name == 'nt':
-        app.setQuitOnLastWindowClosed(False)
-        icon = QIcon('icon.png')
-
-        tray = QSystemTrayIcon()
-        tray.setIcon(icon)
-        tray.setVisible(True)
-
-        menu = QMenu()
-        quit = QAction('Quit')
-        quit.triggered.connect(app.quit)
-
-        menu.addAction(quit)
-        tray.setContextMenu(menu)
-
-
 class Communicate(QObject):
     """ Signals so the secondary thread can communicate with the primary thread """
     ended = Signal(int)
@@ -41,6 +23,8 @@ class Communicate(QObject):
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self.setWindowIcon(QIcon('icon.png'))
+        
         # login window
         self.ui_login = Ui_Login()
         self.ui_login.setupUi(self)
@@ -151,6 +135,7 @@ class MainWindow(QWidget):
         self.horizontalLayout_7.setObjectName(f"horizontalLayout_7_{self.counter}")
         self.sending_filename_label = QLabel(self.sending_filename_frame)
         self.sending_filename_label.setText(self.filename)
+        self.sending_filename_label.setStyleSheet(u'color: white;')
         self.sending_filename_label.setObjectName(f"sending_filename_label_{self.counter}")
 
         self.horizontalLayout_7.addWidget(self.sending_filename_label)
@@ -166,6 +151,7 @@ class MainWindow(QWidget):
         self.horizontalLayout_8 = QHBoxLayout(self.time_frame)
         self.horizontalLayout_8.setObjectName(f"horizontalLayout_8_{self.counter}")
         self.time_label = QLabel(self.time_frame)
+        self.time_label.setStyleSheet(u'color: white;')
         self.time_label.setObjectName(f"time_label_{self.counter}")
 
         self.horizontalLayout_8.addWidget(self.time_label)
@@ -197,7 +183,7 @@ class MainWindow(QWidget):
         self.cancel_button = QPushButton(self.cancel_frame)
         self.cancel_button.setObjectName(f"cancel_button_{self.counter}")
         self.cancel_button.setText('Cancel')
-        self.cancel_button.setStyleSheet(u'background-color: #bf2424;')
+        self.cancel_button.setStyleSheet(u'background-color: #bf2424; color: white;')
 
         self.horizontalLayout_9.addWidget(self.cancel_button)
         self.horizontalLayout_6.addWidget(self.cancel_frame)
@@ -299,7 +285,20 @@ class MainWindow(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    app.setQuitOnLastWindowClosed(False)
+    icon = QIcon('icon.png')
+
+    tray = QSystemTrayIcon()
+    tray.setIcon(icon)
+    tray.setVisible(True)
+
+    menu = QMenu()
+    option1 = QAction('Quit')
+    option1.triggered.connect(app.quit)
+
+    menu.addAction(option1)
+    tray.setContextMenu(menu)
+
     main_window = MainWindow()
     main_window.show()
-    is_windows()
     sys.exit(app.exec_())
