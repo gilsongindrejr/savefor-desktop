@@ -38,6 +38,8 @@ class Ui_Upload(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.select_button = QPushButton(self.select_frame)
         self.select_button.setObjectName(u"select_button")
+        self.select_button.setStyleSheet(u"background-color: rgb(122, 122, 122);\n"
+"color: white;")
 
         self.horizontalLayout_3.addWidget(self.select_button)
 
@@ -52,6 +54,7 @@ class Ui_Upload(object):
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.filename_label = QLabel(self.filename_frame)
         self.filename_label.setObjectName(u"filename_label")
+        self.filename_label.setStyleSheet(u"color: white;")
 
         self.horizontalLayout_4.addWidget(self.filename_label)
 
@@ -67,6 +70,8 @@ class Ui_Upload(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.upload_button = QPushButton(self.upload_frame)
         self.upload_button.setObjectName(u"upload_button")
+        self.upload_button.setStyleSheet(u"background-color: rgb(122, 122, 122);\n"
+"color: white;")
 
         self.horizontalLayout_2.addWidget(self.upload_button)
 
@@ -83,6 +88,8 @@ class Ui_Upload(object):
         self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
         self.logout_button = QPushButton(self.logout_frame)
         self.logout_button.setObjectName(u"logout_button")
+        self.logout_button.setStyleSheet(u"background-color: rgb(122, 122, 122);\n"
+"color: white;")
 
         self.horizontalLayout_11.addWidget(self.logout_button)
 

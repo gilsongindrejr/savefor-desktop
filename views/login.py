@@ -61,16 +61,19 @@ class Ui_Login(object):
         self.verticalLayout_3.setContentsMargins(-1, -1, -1, 0)
         self.username_label = QLabel(self.form_frame)
         self.username_label.setObjectName(u"username_label")
+        self.username_label.setStyleSheet(u"color: white;")
 
         self.verticalLayout_3.addWidget(self.username_label)
 
         self.username_lineEdit = QLineEdit(self.form_frame)
         self.username_lineEdit.setObjectName(u"username_lineEdit")
+        self.username_lineEdit.setStyleSheet(u"")
 
         self.verticalLayout_3.addWidget(self.username_lineEdit)
 
         self.password_label = QLabel(self.form_frame)
         self.password_label.setObjectName(u"password_label")
+        self.password_label.setStyleSheet(u"color: white;")
 
         self.verticalLayout_3.addWidget(self.password_label)
 
@@ -93,6 +96,7 @@ class Ui_Login(object):
         self.horizontalLayout_3.setContentsMargins(-1, 0, -1, 0)
         self.info_label = QLabel(self.info_frame)
         self.info_label.setObjectName(u"info_label")
+        self.info_label.setStyleSheet(u"color: white;")
 
         self.horizontalLayout_3.addWidget(self.info_label, 0, Qt.AlignHCenter)
 
@@ -109,6 +113,8 @@ class Ui_Login(object):
         self.login_button = QPushButton(self.button_frame)
         self.login_button.setObjectName(u"login_button")
         self.login_button.setMaximumSize(QSize(100, 16777215))
+        self.login_button.setStyleSheet(u"background-color: rgb(122, 122, 122);\n"
+"color: white;")
 
         self.horizontalLayout_2.addWidget(self.login_button)
 
