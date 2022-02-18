@@ -1,13 +1,15 @@
 import multiprocessing
+from itertools import count
 from PySide2.QtCore import Signal
 
 
 class Worker:
 
     finished = Signal()
+    id_iter = count()
 
-    def __init__(self, id, client, file):
-        self.id = id
+    def __init__(self, client, file):
+        self.id = next(self.id_iter)
         self.client = client
         self.file = file
         self.proc = None
