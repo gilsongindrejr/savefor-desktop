@@ -14,9 +14,6 @@ def login(username, password, login_url, test_url):
         False (bool):User is not authenticated(due to wrong username or password).
     """
 
-    if not username:
-
-
     # create the session with the login_url
     client = requests.session()
     client.get(login_url)
@@ -32,7 +29,7 @@ def login(username, password, login_url, test_url):
     login_response = client.get(test_url)
 
     # http responses
-    if login_response == 403:
+    if login_response.status_code == 403:
         return False
-    if login_response == 200:
+    if login_response.status_code == 200:
         return True
