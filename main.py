@@ -23,7 +23,7 @@ class Communicate(QObject):
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowIcon(QIcon('icon.png'))
+        self.setWindowIcon(QIcon('resources/images/icon.png'))
         
         # login window
         self.ui_login = Ui_Login()
@@ -266,7 +266,7 @@ class MainWindow(QWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
-    icon = QIcon('icon.png')
+    icon = QIcon('resources/images/icon.png')
 
     tray = QSystemTrayIcon()
     tray.setIcon(icon)
