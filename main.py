@@ -3,7 +3,7 @@ import sys
 import threading
 
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QWidget, QApplication, QLineEdit, QFileDialog, QFrame, QHBoxLayout, QLabel, QProgressBar, \
+from PySide2.QtWidgets import QWidget, QApplication, QLineEdit, QFrame, QHBoxLayout, QLabel, QProgressBar, \
     QPushButton, QButtonGroup, QSystemTrayIcon, QMenu, QAction
 from PySide2.QtCore import QSize, Signal, QObject
 
