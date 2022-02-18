@@ -30,6 +30,6 @@ def login(username, password, login_url, test_url):
 
     # http responses
     if login_response.status_code == 403:
-        return False
+        return None
     if login_response.status_code == 200:
-        return True
+        return client
