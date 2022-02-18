@@ -11,6 +11,7 @@ from PySide2.QtCore import QSize, Signal, QObject
 from views.login import Ui_Login
 from views.upload import Ui_Upload
 from worker import Worker
+from src.controllers.authentication import login
 
 
 class Communicate(QObject):
@@ -61,33 +62,11 @@ class MainWindow(QWidget):
         self.ui_login.password_lineEdit.setEchoMode(QLineEdit.Password)
 
     def login(self):
-        """ Funtion to handle login """
-
-        # get info from the user
-        username = self.ui_login.username_lineEdit.text()
-        password = self.ui_login.password_lineEdit.text()
-
+        """Method to handle user login"""
         login_url = 'http://127.0.0.1:8000/users/login'
-        upload_url = 'http://127.0.0.1:8000/upload'
+        test_url = 'http://127.0.0.1:8000/upload'
 
-        # create a session
-        self.client = requests.session()
-
-        # send get request to login url to retrieve csrf token
-        self.client.get(login_url)
-        csrftoken = self.client.cookies['csrftoken']
-
-        # send login data and csrf token to login url
-        login_data = {'username': username, 'password': password, 'csrfmiddlewaretoken': csrftoken}
-        response = self.client.post(login_url, data=login_data)
-
-        # send get request to upload page to see if the user is authenticated or not
-        # if the user is authenticated it returns 200 if not it returns 403
-        login_response = self.client.get(upload_url)
-
-        if login_response.status_code == 403:
-            self.ui_login.info_label.setText('Wrong username or password')
-        if login_response.status_code == 200:
+        if login(self.ui_login.username_lineEdit.text(), self.ui_login.password_lineEdit.text(), login_url, test_url):
             # clear all the fields and label in login screen
             self.ui_login.username_lineEdit.clear()
             self.ui_login.password_lineEdit.clear()
@@ -95,6 +74,8 @@ class MainWindow(QWidget):
 
             self.hide()
             self.ui_upload_window.show()
+        else:
+            self.ui_login.info_label.setText('Wrong username or password')
 
     def logout(self):
         """ Function to handle logout """
