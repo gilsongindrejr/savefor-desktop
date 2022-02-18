@@ -16,9 +16,10 @@ from src.models.file import File
 
 class Communicate(QObject):
     """ Signals so the secondary thread can communicate with the primary thread """
-    ended = Signal(int)
-    canceled = Signal(int)
-    update = Signal(int)
+    started = Signal(object)
+    ended = Signal(object)
+    canceled = Signal(object)
+    update = Signal(object)
 
 
 class MainWindow(QWidget):
@@ -38,11 +39,13 @@ class MainWindow(QWidget):
         # Attributes used across the class
         self.client = None
         self.file = None
+        self.file_frame = None
         self.counter = 0
         self.group = QButtonGroup(self.ui_upload.scrollAreaWidgetContents)
         self.proc_arr = []
 
         self.comm = Communicate()
+        self.comm.started.connect(self.set_estimated_time)
         self.comm.ended.connect(self.set_button_done)
         self.comm.ended.connect(self.complete_info)
         self.comm.update.connect(self.update_progress_bar)
@@ -53,7 +56,6 @@ class MainWindow(QWidget):
         self.ui_upload.logout_button.clicked.connect(self.logout)
         self.ui_upload.select_button.clicked.connect(self.select_file)
         self.ui_upload.upload_button.clicked.connect(self.add_file_frame)
-        self.ui_upload.upload_button.clicked.connect(self.set_estimated_time)
         self.ui_upload.upload_button.clicked.connect(self.create_worker)
         self.ui_upload.upload_button.clicked.connect(self.clear_file)
         self.group.idClicked.connect(self.cancel_worker)
@@ -105,57 +107,57 @@ class MainWindow(QWidget):
         """ Add a file upload frame with the filename, estimated time, progress bar and cancel button """
         # The frame containing all the info
         self.file_frame = QFrame(self.ui_upload.scrollAreaWidgetContents)
-        self.file_frame.setObjectName(f"file_frame_{self.counter}")
+        self.file_frame.setObjectName(f"file_frame_x")
         self.file_frame.setMinimumSize(QSize(0, 80))
         self.file_frame.setMaximumSize(QSize(16777215, 80))
         self.file_frame.setFrameShape(QFrame.NoFrame)
         self.file_frame.setFrameShadow(QFrame.Raised)
 
         self.horizontalLayout_6 = QHBoxLayout(self.file_frame)
-        self.horizontalLayout_6.setObjectName(f"horizontalLayout_6_{self.counter}")
+        self.horizontalLayout_6.setObjectName(f"horizontalLayout_6_x")
 
         # Frame containing the filename
         self.sending_filename_frame = QFrame(self.file_frame)
-        self.sending_filename_frame.setObjectName(f"sending_filename_frame_{self.counter}")
+        self.sending_filename_frame.setObjectName(f"sending_filename_frame_x")
         self.sending_filename_frame.setMinimumSize(QSize(150, 0))
         self.sending_filename_frame.setMaximumSize(QSize(150, 16777215))
         self.sending_filename_frame.setFrameShape(QFrame.NoFrame)
         self.sending_filename_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_7 = QHBoxLayout(self.sending_filename_frame)
-        self.horizontalLayout_7.setObjectName(f"horizontalLayout_7_{self.counter}")
+        self.horizontalLayout_7.setObjectName(f"horizontalLayout_7_x")
         self.sending_filename_label = QLabel(self.sending_filename_frame)
         self.sending_filename_label.setText(self.file.get_filename())
         self.sending_filename_label.setStyleSheet(u'color: white;')
-        self.sending_filename_label.setObjectName(f"sending_filename_label_{self.counter}")
+        self.sending_filename_label.setObjectName(f"sending_filename_label_x")
 
         self.horizontalLayout_7.addWidget(self.sending_filename_label)
         self.horizontalLayout_6.addWidget(self.sending_filename_frame)
 
         # Frame containing the estimated time
         self.time_frame = QFrame(self.file_frame)
-        self.time_frame.setObjectName(f"time_frame_{self.counter}")
+        self.time_frame.setObjectName(f"time_frame_x")
         self.time_frame.setMinimumSize(QSize(150, 0))
         self.time_frame.setMaximumSize(QSize(150, 16777215))
         self.time_frame.setFrameShape(QFrame.NoFrame)
         self.time_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_8 = QHBoxLayout(self.time_frame)
-        self.horizontalLayout_8.setObjectName(f"horizontalLayout_8_{self.counter}")
+        self.horizontalLayout_8.setObjectName(f"horizontalLayout_8_x")
         self.time_label = QLabel(self.time_frame)
         self.time_label.setStyleSheet(u'color: white;')
-        self.time_label.setObjectName(f"time_label_{self.counter}")
+        self.time_label.setObjectName(f"time_label_x")
 
         self.horizontalLayout_8.addWidget(self.time_label)
         self.horizontalLayout_6.addWidget(self.time_frame)
 
         # Frame containing the progress bar
         self.progressBar_frame = QFrame(self.file_frame)
-        self.progressBar_frame.setObjectName(f"progressBar_frame_{self.counter}")
+        self.progressBar_frame.setObjectName(f"progressBar_frame_x")
         self.progressBar_frame.setFrameShape(QFrame.NoFrame)
         self.progressBar_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_10 = QHBoxLayout(self.progressBar_frame)
-        self.horizontalLayout_10.setObjectName(f"horizontalLayout_10_{self.counter}")
+        self.horizontalLayout_10.setObjectName(f"horizontalLayout_10_x")
         self.progressBar = QProgressBar(self.progressBar_frame)
-        self.progressBar.setObjectName(f"progressBar_{self.counter}")
+        self.progressBar.setObjectName(f"progressBar_x")
         self.progressBar.setValue(0)
 
         self.horizontalLayout_10.addWidget(self.progressBar)
@@ -163,15 +165,15 @@ class MainWindow(QWidget):
 
         # Frame containing the cancel button
         self.cancel_frame = QFrame(self.file_frame)
-        self.cancel_frame.setObjectName(f"cancel_frame_{self.counter}")
+        self.cancel_frame.setObjectName(f"cancel_frame_x")
         self.cancel_frame.setMinimumSize(QSize(80, 0))
         self.cancel_frame.setMaximumSize(QSize(80, 16777215))
         self.cancel_frame.setFrameShape(QFrame.NoFrame)
         self.cancel_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_9 = QHBoxLayout(self.cancel_frame)
-        self.horizontalLayout_9.setObjectName(f"horizontalLayout_9_{self.counter}")
+        self.horizontalLayout_9.setObjectName(f"horizontalLayout_9_x")
         self.cancel_button = QPushButton(self.cancel_frame)
-        self.cancel_button.setObjectName(f"cancel_button_{self.counter}")
+        self.cancel_button.setObjectName(f"cancel_button_x")
         self.cancel_button.setText('Cancel')
         self.cancel_button.setStyleSheet(u'background-color: #bf2424; color: white;')
 
@@ -183,50 +185,53 @@ class MainWindow(QWidget):
         self.ui_upload.verticalLayout.addWidget(self.ui_upload.content_frame)
 
         # Add the cancel button to the button group with the id being the counter number
-        self.group.addButton(self.cancel_button, self.counter)
+        # self.group.addButton(self.cancel_button, self.counter)
+        self.group.addButton(self.cancel_button)
 
     def create_worker(self):
         """ Create the worker process to send the file """
-        worker = Worker(self.counter, self.client, self.file.get_file())
+        worker = Worker(self.client, self.file.get_file())
         self.proc_arr.append(worker)
-        for process in self.proc_arr:
-            if process.id == self.counter:
-                process.create_process()
-                self.create_threads(worker)
-                self.counter += 1
+        self.proc_arr[-1].create_process()
+        self.create_threads(worker)
+        self.counter += 1
 
-    def cancel_worker(self, id):
+    def cancel_worker(self, worker):
         """ Cancel the worker process by calling the method terminate """
         # self.proc_arr[id].cancel()
-        if self.proc_arr[id].proc.is_alive():
-            self.proc_arr[id].canceled = True
-            self.proc_arr[id].proc.terminate()
+        print(worker)
+        if worker.proc.is_alive():
+            worker.canceled = True
+            worker.proc.terminate()
             self.cancel_info(id)
         else:
-            self.group.button(id).parent().parent().deleteLater()
+            print('deleting frame')
+            # self.group.button(id).parent().parent().deleteLater()
 
-    def set_button_done(self):
+    def set_button_done(self, file_frame):
         """ Set the cancel button to done """
-        self.group.button(self.counter - 1).setText('Done')
-        self.group.button(self.counter - 1).setStyleSheet(u'background-color: #1fad1a;')
+        button = file_frame.children()[-1].children()[-1]
+        button.setText('Done')
+        button.setStyleSheet(u'background-color: #1fad1a;')
 
     def create_threads(self, worker):
         """ Create the thread to monitor the process """
-        t = threading.Thread(target=self.check_if_process_is_alive, args=(worker,))
+        t = threading.Thread(target=self.check_if_process_is_alive, args=(worker, self.file_frame))
         t.start()
+        self.comm.started.emit(self.file_frame)
 
-    def check_if_process_is_alive(self, worker):
+    def check_if_process_is_alive(self, worker, file_frame):
         """ Function to check if the process is still alive """
         while 1:
             try:
                 if worker.proc.is_alive():
-                    self.comm.update.emit(worker.id)
+                    self.comm.update.emit(file_frame)
                     continue
                 else:
                     if worker.canceled:
-                        self.comm.canceled.emit(worker.id)
+                        self.comm.canceled.emit(worker)
                         break
-                    self.comm.ended.emit(worker.id)
+                    self.comm.ended.emit(file_frame)
                     break
             except Exception:
                 # Using broad exception clause just to know if the process is not created
@@ -236,14 +241,14 @@ class MainWindow(QWidget):
         self.ui_upload.filename_label.clear()
         self.file = None
 
-    def complete_info(self, id):
+    def complete_info(self, file_frame):
         """ Set the progress bar value to 100 """
-        progress_bar = self.group.button(id).parent().parent().children()[3].children()[1]
+        progress_bar = file_frame.children()[3].children()[-1]
         progress_bar.setValue(100)
 
-    def update_progress_bar(self, worker_id):
+    def update_progress_bar(self, file_frame):
         """ Set progress bar value += 1 """
-        progress_bar = self.group.button(worker_id).parent().parent().children()[3].children()[1]
+        progress_bar = file_frame.children()[3].children()[-1]
         if progress_bar.value() == 99:
             return
         else:
@@ -255,14 +260,14 @@ class MainWindow(QWidget):
         self.group.button(id).setText('Remove')
         time_label.setText('Canceled')
 
-    def set_estimated_time(self):
+    def set_estimated_time(self, file_frame):
         """ Funtion to set the estimated time for the upload file
 
             OBS: Since django communication with the python libs to show progress and estimated time
             (tqdm and requests_toolbelt)
             can't be done yet, the better option was to use this fake estimated time
         """
-        time_label = self.group.button(self.counter).parent().parent().children()[2].children()[1]
+        time_label = file_frame.children()[2].children()[-1]
         if int(os.path.getsize(self.file.get_file_path()) / float(1 << 20)) < 30:
             time_label.setText('Estimated < 1s')
         elif int(os.path.getsize(self.file.get_file_path()) / float(1 << 20)) < 60:
