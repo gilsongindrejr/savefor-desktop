@@ -11,6 +11,7 @@ from src.views.login import Ui_Login
 from src.views.upload import Ui_Upload
 from src.controllers.worker import Worker
 from src.controllers.authentication import login
+from src.models.file import File
 
 
 class Communicate(QObject):
@@ -35,12 +36,11 @@ class MainWindow(QWidget):
         self.ui_upload.setupUi(self.ui_upload_window)
 
         # Attributes used across the class
+        self.client = None
         self.file = None
-        self.filename = None
         self.counter = 0
         self.group = QButtonGroup(self.ui_upload.scrollAreaWidgetContents)
         self.proc_arr = []
-        self.client = None
 
         self.comm = Communicate()
         self.comm.ended.connect(self.set_button_done)
@@ -55,6 +55,7 @@ class MainWindow(QWidget):
         self.ui_upload.upload_button.clicked.connect(self.add_file_frame)
         self.ui_upload.upload_button.clicked.connect(self.set_estimated_time)
         self.ui_upload.upload_button.clicked.connect(self.create_worker)
+        self.ui_upload.upload_button.clicked.connect(self.clear_file)
         self.group.idClicked.connect(self.cancel_worker)
 
         # set echo mode
@@ -65,31 +66,40 @@ class MainWindow(QWidget):
         login_url = 'http://127.0.0.1:8000/users/login'
         test_url = 'http://127.0.0.1:8000/upload'
 
-        if login(self.ui_login.username_lineEdit.text(), self.ui_login.password_lineEdit.text(), login_url, test_url):
-            # clear all the fields and label in login screen
+        client = login(
+            username=self.ui_login.username_lineEdit.text(),
+            password=self.ui_login.password_lineEdit.text(),
+            login_url=login_url,
+            test_url=test_url
+        )
+
+        if client:
+            # clear all the fields and label in login screen and show upload screen
             self.ui_login.username_lineEdit.clear()
             self.ui_login.password_lineEdit.clear()
             self.ui_login.info_label.clear()
 
             self.hide()
             self.ui_upload_window.show()
+
+            self.client = client
         else:
             self.ui_login.info_label.setText('Wrong username or password')
 
     def logout(self):
         """ Function to handle logout """
         self.show()
+        # clear upload window
         for children in self.ui_upload.scrollAreaWidgetContents.children():
             children.deleteLater()
             self.counter = 0
+        self.client = None
         self.ui_upload_window.hide()
 
     def select_file(self):
-        """ Select the file using QFileDialog and send to the global variable """
-        self.file = QFileDialog.getOpenFileName()
-        self.filename = self.file[0].split('/')[-1]
-
-        self.ui_upload.filename_label.setText(self.filename)
+        """Instantiate a file class and send to the class attr"""
+        self.file = File()
+        self.ui_upload.filename_label.setText(self.file.get_filename())
 
     def add_file_frame(self):
         """ Add a file upload frame with the filename, estimated time, progress bar and cancel button """
@@ -114,7 +124,7 @@ class MainWindow(QWidget):
         self.horizontalLayout_7 = QHBoxLayout(self.sending_filename_frame)
         self.horizontalLayout_7.setObjectName(f"horizontalLayout_7_{self.counter}")
         self.sending_filename_label = QLabel(self.sending_filename_frame)
-        self.sending_filename_label.setText(self.filename)
+        self.sending_filename_label.setText(self.file.get_filename())
         self.sending_filename_label.setStyleSheet(u'color: white;')
         self.sending_filename_label.setObjectName(f"sending_filename_label_{self.counter}")
 
@@ -177,7 +187,7 @@ class MainWindow(QWidget):
 
     def create_worker(self):
         """ Create the worker process to send the file """
-        worker = Worker(self.counter, self.client, self.file)
+        worker = Worker(self.counter, self.client, self.file.get_file())
         self.proc_arr.append(worker)
         for process in self.proc_arr:
             if process.id == self.counter:
@@ -222,6 +232,10 @@ class MainWindow(QWidget):
                 # Using broad exception clause just to know if the process is not created
                 break
 
+    def clear_file(self):
+        self.ui_upload.filename_label.clear()
+        self.file = None
+
     def complete_info(self, id):
         """ Set the progress bar value to 100 """
         progress_bar = self.group.button(id).parent().parent().children()[3].children()[1]
@@ -249,15 +263,15 @@ class MainWindow(QWidget):
             can't be done yet, the better option was to use this fake estimated time
         """
         time_label = self.group.button(self.counter).parent().parent().children()[2].children()[1]
-        if int(os.path.getsize(self.file[0]) / float(1 << 20)) < 30:
+        if int(os.path.getsize(self.file.get_file_path()) / float(1 << 20)) < 30:
             time_label.setText('Estimated < 1s')
-        elif int(os.path.getsize(self.file[0]) / float(1 << 20)) < 60:
+        elif int(os.path.getsize(self.file.get_file_path()) / float(1 << 20)) < 60:
             time_label.setText('Estimated < 1.5s')
-        elif int(os.path.getsize(self.file[0]) / float(1 << 20)) < 120:
+        elif int(os.path.getsize(self.file.get_file_path()) / float(1 << 20)) < 120:
             time_label.setText('Estimated < 2')
-        elif int(os.path.getsize(self.file[0]) / float(1 << 20)) < 240:
+        elif int(os.path.getsize(self.file.get_file_path()) / float(1 << 20)) < 240:
             time_label.setText('Estimated < 2.5')
-        elif int(os.path.getsize(self.file[0]) / float(1 << 20)) < 460:
+        elif int(os.path.getsize(self.file.get_file_path()) / float(1 << 20)) < 460:
             time_label.setText('Estimated < 20s')
         else:
             time_label.setText('Estimated > 20s')
