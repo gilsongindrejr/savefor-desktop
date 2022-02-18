@@ -2,15 +2,14 @@ import os
 import sys
 import threading
 
-import requests
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QWidget, QApplication, QLineEdit, QFileDialog, QFrame, QHBoxLayout, QLabel, QProgressBar, \
     QPushButton, QButtonGroup, QSystemTrayIcon, QMenu, QAction
 from PySide2.QtCore import QSize, Signal, QObject
 
-from views.login import Ui_Login
-from views.upload import Ui_Upload
-from worker import Worker
+from src.views.login import Ui_Login
+from src.views.upload import Ui_Upload
+from src.controllers.worker import Worker
 from src.controllers.authentication import login
 
 
