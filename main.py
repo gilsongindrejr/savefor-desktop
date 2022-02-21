@@ -18,7 +18,6 @@ class Communicate(QObject):
     """ Signals so the secondary thread can communicate with the primary thread """
     started = Signal(object)
     ended = Signal(object)
-    canceled = Signal(object)
     update = Signal(object)
 
 
@@ -49,7 +48,6 @@ class MainWindow(QWidget):
         self.comm.ended.connect(self.set_button_done)
         self.comm.ended.connect(self.complete_info)
         self.comm.update.connect(self.update_progress_bar)
-        self.comm.canceled.connect(self.cancel_worker)
 
         # button connections
         self.ui_login.login_button.clicked.connect(self.login)
@@ -185,8 +183,7 @@ class MainWindow(QWidget):
         self.ui_upload.verticalLayout.addWidget(self.ui_upload.content_frame)
 
         # Add the cancel button to the button group with the id being the counter number
-        # self.group.addButton(self.cancel_button, self.counter)
-        self.group.addButton(self.cancel_button)
+        self.group.addButton(self.cancel_button, self.counter)
 
     def create_worker(self):
         """ Create the worker process to send the file """
@@ -196,17 +193,14 @@ class MainWindow(QWidget):
         self.create_threads(worker)
         self.counter += 1
 
-    def cancel_worker(self, worker):
+    def cancel_worker(self, id):
         """ Cancel the worker process by calling the method terminate """
-        # self.proc_arr[id].cancel()
-        print(worker)
+        worker = self.proc_arr[id]
         if worker.proc.is_alive():
             worker.canceled = True
-            worker.proc.terminate()
             self.cancel_info(id)
         else:
-            print('deleting frame')
-            # self.group.button(id).parent().parent().deleteLater()
+            self.group.button(id).parent().parent().deleteLater()
 
     def set_button_done(self, file_frame):
         """ Set the cancel button to done """
@@ -229,7 +223,7 @@ class MainWindow(QWidget):
                     continue
                 else:
                     if worker.canceled:
-                        self.comm.canceled.emit(worker)
+                        worker.cancel()
                         break
                     self.comm.ended.emit(file_frame)
                     break
