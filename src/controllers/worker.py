@@ -1,35 +1,29 @@
 import multiprocessing
-from itertools import count
-from PySide2.QtCore import Signal
 
 
 class Worker:
 
-    finished = Signal()
-    id_iter = count()
-
-    def __init__(self, client, file):
-        self.id = next(self.id_iter)
+    def __init__(self, client, file, upload_url):
         self.client = client
         self.file = file
+        self.upload_url = upload_url
         self.proc = None
         self.canceled = False
 
-    def _send_file(self, client, file):
+    def _send_file(self):
         """ Upload the chosen file """
-        upload_url = 'http://127.0.0.1:8000/upload'
-        file_upload = {'file': open(file[0], 'rb')}
+        file = {'file': open(self.file[0], 'rb')}
 
         # get upload_url csrftoken
-        client.get(upload_url)
-        csrftoken = client.cookies['csrftoken']
+        self.client.get(self.upload_url)
+        csrftoken = self.client.cookies['csrftoken']
 
         # send post request with the file
-        response = client.post(upload_url, files=file_upload, data={'csrfmiddlewaretoken': csrftoken})
+        self.client.post(self.upload_url, files=file, data={'csrfmiddlewaretoken': csrftoken})
 
     def create_process(self):
         """ Create the process that will upload the file """
-        self.proc = multiprocessing.Process(target=self._send_file, args=(self.client, self.file))
+        self.proc = multiprocessing.Process(target=self._send_file)
         self.proc.start()
 
     def cancel(self):
