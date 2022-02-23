@@ -1,24 +1,18 @@
 import os
 import sys
-import threading
 
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QWidget, QApplication, QLineEdit, QFrame, QHBoxLayout, QLabel, QProgressBar, \
     QPushButton, QButtonGroup, QSystemTrayIcon, QMenu, QAction
-from PySide2.QtCore import QSize, Signal, QObject
+from PySide2.QtCore import QSize
 
 from src.views.login import Ui_Login
 from src.views.upload import Ui_Upload
 from src.controllers.worker import Worker
+from src.controllers.monitor import Monitor
+from src.controllers.communication import Communicate
 from src.controllers.authentication import login
 from src.models.file import File
-
-
-class Communicate(QObject):
-    """ Signals so the secondary thread can communicate with the primary thread """
-    started = Signal(object)
-    ended = Signal(object)
-    update = Signal(object)
 
 
 class MainWindow(QWidget):
@@ -39,10 +33,13 @@ class MainWindow(QWidget):
         self.client = None
         self.file = None
         self.file_frame = None
+        self.upload_url = 'http://127.0.0.1:8000/upload'
         self.counter = 0
         self.group = QButtonGroup(self.ui_upload.scrollAreaWidgetContents)
         self.proc_arr = []
 
+        # communication slots
+        # used to communicate between the main thread and the monitor thread
         self.comm = Communicate()
         self.comm.started.connect(self.set_estimated_time)
         self.comm.ended.connect(self.set_button_done)
@@ -55,7 +52,7 @@ class MainWindow(QWidget):
         self.ui_upload.select_button.clicked.connect(self.select_file)
         self.ui_upload.upload_button.clicked.connect(self.add_file_frame)
         self.ui_upload.upload_button.clicked.connect(self.create_worker)
-        self.ui_upload.upload_button.clicked.connect(self.clear_file)
+        self.ui_upload.upload_button.clicked.connect(self.clear_filename)
         self.group.idClicked.connect(self.cancel_worker)
 
         # set echo mode
@@ -184,14 +181,14 @@ class MainWindow(QWidget):
 
         # Add the cancel button to the button group with the id being the counter number
         self.group.addButton(self.cancel_button, self.counter)
+        self.counter += 1
 
     def create_worker(self):
-        """ Create the worker process to send the file """
-        worker = Worker(self.client, self.file.get_file())
+        """ Instantiate and start a worker and monitor"""
+        worker = Worker(self.client, self.file.get_file(), self.upload_url)
         self.proc_arr.append(worker)
-        self.proc_arr[-1].create_process()
-        self.create_threads(worker)
-        self.counter += 1
+        monitor = Monitor(worker, self.comm, self.file_frame)
+        monitor.create_thread()
 
     def cancel_worker(self, id):
         """ Cancel the worker process by calling the method terminate """
@@ -208,32 +205,9 @@ class MainWindow(QWidget):
         button.setText('Done')
         button.setStyleSheet(u'background-color: #1fad1a;')
 
-    def create_threads(self, worker):
-        """ Create the thread to monitor the process """
-        t = threading.Thread(target=self.check_if_process_is_alive, args=(worker, self.file_frame))
-        t.start()
-        self.comm.started.emit(self.file_frame)
-
-    def check_if_process_is_alive(self, worker, file_frame):
-        """ Function to check if the process is still alive """
-        while 1:
-            try:
-                if worker.proc.is_alive():
-                    self.comm.update.emit(file_frame)
-                    continue
-                else:
-                    if worker.canceled:
-                        worker.cancel()
-                        break
-                    self.comm.ended.emit(file_frame)
-                    break
-            except Exception:
-                # Using broad exception clause just to know if the process is not created
-                break
-
-    def clear_file(self):
+    def clear_filename(self):
+        """ Clear the filename label"""
         self.ui_upload.filename_label.clear()
-        self.file = None
 
     def complete_info(self, file_frame):
         """ Set the progress bar value to 100 """
