@@ -33,6 +33,7 @@ class MainWindow(QWidget):
         self.client = None
         self.file = None
         self.file_frame = None
+        self.login_url = 'http://127.0.0.1:8000/users/login'
         self.upload_url = 'http://127.0.0.1:8000/upload'
         self.counter = 0
         self.group = QButtonGroup(self.ui_upload.scrollAreaWidgetContents)
@@ -60,14 +61,12 @@ class MainWindow(QWidget):
 
     def login(self):
         """Method to handle user login"""
-        login_url = 'http://127.0.0.1:8000/users/login'
-        test_url = 'http://127.0.0.1:8000/upload'
 
         client = login(
             username=self.ui_login.username_lineEdit.text(),
             password=self.ui_login.password_lineEdit.text(),
-            login_url=login_url,
-            test_url=test_url
+            login_url=self.login_url,
+            test_url=self.upload_url
         )
 
         if client:
