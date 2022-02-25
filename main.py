@@ -43,9 +43,9 @@ class MainWindow(QWidget):
         # used to communicate between the main thread and the monitor thread
         self.comm = Communicate()
         self.comm.started.connect(self.set_estimated_time)
-        self.comm.ended.connect(self.set_button_done)
         self.comm.ended.connect(self.complete_info)
         self.comm.update.connect(self.update_progress_bar)
+        self.comm.canceled.connect(self.cancel_info)
 
         # button connections
         self.ui_login.login_button.clicked.connect(self.login)
@@ -194,24 +194,20 @@ class MainWindow(QWidget):
         worker = self.proc_arr[id]
         if worker.proc.is_alive():
             worker.canceled = True
-            self.cancel_info(id)
         else:
             self.group.button(id).parent().parent().deleteLater()
-
-    def set_button_done(self, file_frame):
-        """ Set the cancel button to done """
-        button = file_frame.children()[-1].children()[-1]
-        button.setText('Done')
-        button.setStyleSheet(u'background-color: #1fad1a;')
 
     def clear_filename(self):
         """ Clear the filename label"""
         self.ui_upload.filename_label.clear()
 
     def complete_info(self, file_frame):
-        """ Set the progress bar value to 100 """
+        """ Set all the info when the file upload is completed """
         progress_bar = file_frame.children()[3].children()[-1]
         progress_bar.setValue(100)
+        button = file_frame.children()[-1].children()[-1]
+        button.setText('Done')
+        button.setStyleSheet(u'background-color: #1fad1a;')
 
     def update_progress_bar(self, file_frame):
         """ Set progress bar value += 1 """
@@ -221,18 +217,19 @@ class MainWindow(QWidget):
         else:
             progress_bar.setValue(progress_bar.value() + 1)
 
-    def cancel_info(self, id):
-        """ Set the progress bar value to 0 """
-        time_label = self.group.button(id).parent().parent().children()[2].children()[1]
-        self.group.button(id).setText('Remove')
+    def cancel_info(self, file_frame):
+        """ Set all the info when file upload is canceled """
+        time_label = file_frame.children()[2].children()[-1]
         time_label.setText('Canceled')
+        button = file_frame.children()[-1].children()[-1]
+        button.setText('Remove')
 
     def set_estimated_time(self, file_frame):
         """ Funtion to set the estimated time for the upload file
 
             OBS: Since django communication with the python libs to show progress and estimated time
             (tqdm and requests_toolbelt)
-            can't be done yet, the better option was to use this fake estimated time
+            can't be done yet, the best option was to use this fake estimated time
         """
         time_label = file_frame.children()[2].children()[-1]
         if int(os.path.getsize(self.file.get_file_path()) / float(1 << 20)) < 30:
