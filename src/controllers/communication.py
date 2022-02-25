@@ -6,3 +6,4 @@ class Communicate(QObject):
     started = Signal(object)
     ended = Signal(object)
     update = Signal(object)
+    canceled = Signal(object)
