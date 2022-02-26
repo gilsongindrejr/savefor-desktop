@@ -1,6 +1,6 @@
 # Savefor - desktop
 
-App to upload files to the savefor web app.
+App to upload files to <a href="https://github.com/gilsongindrejr/savefor-web">savefor web app</a>
 
 ### Create a virtual enviroment
 ```
