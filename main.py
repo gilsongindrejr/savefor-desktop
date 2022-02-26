@@ -100,6 +100,8 @@ class MainWindow(QWidget):
     def add_file_frame(self):
         """ Add a file upload frame with the filename, estimated time, progress bar and cancel button """
         # The frame containing all the info
+        if not self.file:
+            return
         self.file_frame = QFrame(self.ui_upload.scrollAreaWidgetContents)
         self.file_frame.setObjectName(f"file_frame_x")
         self.file_frame.setMinimumSize(QSize(0, 80))
@@ -184,6 +186,8 @@ class MainWindow(QWidget):
 
     def create_worker(self):
         """ Instantiate and start a worker and monitor"""
+        if not self.file:
+            return
         worker = Worker(self.client, self.file.get_file(), self.upload_url)
         self.proc_arr.append(worker)
         monitor = Monitor(worker, self.comm, self.file_frame)
