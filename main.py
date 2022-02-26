@@ -87,8 +87,9 @@ class MainWindow(QWidget):
         self.show()
         # clear upload window
         for children in self.ui_upload.scrollAreaWidgetContents.children():
-            children.deleteLater()
-            self.counter = 0
+            if children.objectName() == 'file_frame':
+                children.deleteLater()
+        self.counter = 0
         self.client = None
         self.ui_upload_window.hide()
 
@@ -103,7 +104,7 @@ class MainWindow(QWidget):
         if not self.file:
             return
         self.file_frame = QFrame(self.ui_upload.scrollAreaWidgetContents)
-        self.file_frame.setObjectName(f"file_frame_x")
+        self.file_frame.setObjectName(f"file_frame")
         self.file_frame.setMinimumSize(QSize(0, 80))
         self.file_frame.setMaximumSize(QSize(16777215, 80))
         self.file_frame.setFrameShape(QFrame.NoFrame)
